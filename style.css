@@ -321,6 +321,9 @@ section { scroll-margin-top: 96px; }
   margin-bottom: 22px;
 }
 
+/* short eyebrow/sub variants only appear on phones (see mobile hero block) */
+.hero-eyebrow-short { display: none; }
+
 .hero h1 {
   font-size: clamp(2.7rem, 6.5vw, 4.9rem);
   font-weight: 450;
@@ -339,6 +342,8 @@ section { scroll-margin-top: 96px; }
   margin-inline: auto;
   margin-bottom: 34px;
 }
+
+.hero-sub--short { display: none; }
 
 .hero-doors {
   display: flex;
@@ -1615,9 +1620,20 @@ section { scroll-margin-top: 96px; }
   .thumb-row { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 }
 
+@media (max-width: 600px) {
+  /* Mobile hero: the desktop version stacks five text blocks into one narrow
+     column. Trim the redundant ones (the brand line, the feature strip), swap
+     in a shorter sub, and drop the trailing gap so the hero breathes. */
+  .hero-eyebrow-full { display: none; }
+  .hero-eyebrow-short { display: inline; }
+  .hero-sub--full { display: none; }
+  .hero-sub--short { display: block; }
+  .hero-strip { display: none; }
+  .hero-doors { margin-bottom: 0; }
+}
+
 @media (max-width: 480px) {
   .hero-doors .btn { width: min(320px, 100%); }
-  .hero-strip { gap: 8px 20px; font-size: 0.72rem; }
   .thumb-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .amenities-grid { grid-template-columns: 1fr; }
 }
