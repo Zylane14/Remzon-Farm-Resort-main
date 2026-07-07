@@ -15,6 +15,8 @@
   --leaf: #4A5D43;
   --line: #E2D8C6;
   --white: #FFFDF8;
+  /* Apung Oting's signature — the restaurant's own logo maroon, used only on dining */
+  --maroon: #7A2F3A;
 
   --font-display: "Fraunces", serif;
   --font-body: "Figtree", sans-serif;
@@ -532,6 +534,171 @@ section { scroll-margin-top: 96px; }
 .dine-actions .resto-logo {
   max-width: 150px;
   mix-blend-mode: multiply;
+}
+
+/* ---------- Dining page ---------- */
+
+.dine-hero { min-height: min(82svh, 680px); }
+
+.dine-hero::before {
+  background-image: url("Restaurant/dining-arch.jpg");
+  background-position: center 70%;
+}
+
+/* kitchen favorites */
+.dish-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 3vw, 32px);
+  margin-top: clamp(36px, 5vw, 56px);
+}
+
+.dish-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dish-card .card-photo {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+}
+
+.dish-card .card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dish-card .card-body {
+  padding: 20px 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.dish-card h3 { font-size: 1.35rem; margin-bottom: 0; }
+
+.dish-card .dish-note {
+  font-size: 0.92rem;
+  color: var(--espresso-soft);
+  margin: 0;
+}
+
+.dish-card .dish-price {
+  margin-top: auto;
+  padding-top: 12px;
+  font-weight: 700;
+  color: var(--clay-dark);
+}
+
+.specialty-tag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(122, 47, 58, 0.09);
+  color: var(--maroon);
+  border-radius: 999px;
+  padding: 3px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.specialty-tag i { font-size: 0.68rem; }
+
+/* menu */
+.menu-legend {
+  font-size: 0.9rem;
+  color: var(--espresso-soft);
+}
+
+.menu-legend i { color: var(--maroon); font-size: 0.75rem; }
+
+.menu-nav {
+  position: sticky;
+  top: 82px;
+  z-index: 30;
+  background: rgba(250, 246, 239, 0.96);
+  border-block: 1px solid var(--line);
+}
+
+.menu-nav-inner {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding: 12px var(--gutter);
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.menu-chip {
+  flex-shrink: 0;
+  padding: 8px 20px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--espresso);
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.menu-chip:hover {
+  border-color: var(--maroon);
+  color: var(--maroon);
+}
+
+.menu-group {
+  padding-top: clamp(44px, 6vw, 68px);
+  scroll-margin-top: 150px;
+}
+
+.menu-group > h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); }
+
+.menu-columns {
+  columns: 2;
+  column-gap: clamp(36px, 5vw, 72px);
+  margin-top: 10px;
+}
+
+.menu-block {
+  break-inside: avoid;
+  padding-bottom: 30px;
+}
+
+.menu-block h3 {
+  font-size: 1.2rem;
+  color: var(--maroon);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 9px;
+  margin-bottom: 14px;
+}
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.menu-list .spec {
+  color: var(--maroon);
+  font-size: 0.68rem;
+  margin-left: 5px;
+}
+
+.menu-note {
+  font-size: 0.9rem;
+  color: var(--espresso-soft);
+  margin: 28px 0 0;
 }
 
 /* ---------- Day visits / rates ---------- */
@@ -1600,6 +1767,11 @@ section { scroll-margin-top: 96px; }
 
   .cards-3 { grid-template-columns: 1fr; max-width: 440px; margin-inline: auto; }
   .visit-cards { grid-template-columns: 1fr; }
+  .dish-cards { grid-template-columns: 1fr; max-width: 440px; margin-inline: auto; }
+
+  .menu-columns { columns: 1; }
+  .menu-nav { top: 68px; }
+  .menu-group { scroll-margin-top: 132px; }
 
   .booking-layout { grid-template-columns: 1fr; }
   .booking-aside { position: static; }
