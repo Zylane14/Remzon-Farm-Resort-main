@@ -1122,6 +1122,16 @@ section { scroll-margin-top: 96px; }
 
 .field textarea { resize: vertical; min-height: 110px; }
 
+/* iOS Safari sizes type=date to its native content (ignoring width:100%) and
+   centers the text, so the field overshoots its grid cell on mobile. Strip the
+   native appearance and pin it to a plain, left-aligned, full-width box. */
+.field input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  text-align: left;
+}
+
 .field .field-error {
   display: none;
   font-size: 0.85rem;
