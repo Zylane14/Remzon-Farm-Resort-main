@@ -541,8 +541,8 @@ section { scroll-margin-top: 96px; }
 .dine-hero { min-height: min(82svh, 680px); }
 
 .dine-hero::before {
-  background-image: url("Restaurant/dining-arch.jpg");
-  background-position: center 70%;
+  background-image: url("Restaurant/dine.jpg");
+  background-position: center 62%;
 }
 
 /* kitchen favorites */
@@ -619,7 +619,14 @@ section { scroll-margin-top: 96px; }
   color: var(--espresso-soft);
 }
 
-.menu-legend i { color: var(--maroon); font-size: 0.75rem; }
+/* chef-hat specialty marker — same mark the printed menu uses */
+.spec-hat {
+  height: 1em;
+  width: auto;
+  display: inline-block;
+  vertical-align: -0.15em;
+  margin-left: 2px;
+}
 
 .menu-nav {
   position: sticky;
@@ -689,10 +696,15 @@ section { scroll-margin-top: 96px; }
   gap: 9px;
 }
 
-.menu-list .spec {
-  color: var(--maroon);
-  font-size: 0.68rem;
-  margin-left: 5px;
+/* hairline between items so the eye keeps its row */
+.menu-list .rate-row {
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(226, 216, 198, 0.55);
+}
+
+.menu-list .rate-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
 .menu-note {
