@@ -753,7 +753,16 @@ section { scroll-margin-top: 96px; }
   border-color: var(--cream);
 }
 
-/* icon-only circles: undo bootstrap-icons' baseline nudge (-.125em) so glyphs sit dead-center */
+/* icon-only circles: center the glyph by geometry, not baseline. The inherited
+   line-height (1.7) plus bootstrap-icons' -.125em nudge left glyphs sitting high;
+   a flex icon box with line-height:1 seats them dead-center. */
+.footer-social a i,
+.chat-toggle i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
 .footer-social a i::before,
 .chat-toggle i::before { vertical-align: 0; }
 
