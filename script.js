@@ -68,6 +68,70 @@ if (mainPhoto) {
   });
 }
 
+// Dining food strip: drifts slowly on its own, loops seamlessly, and yields
+// to the guest — pausing on hover/touch/wheel and supporting mouse drag.
+const autoStrip = document.querySelector('.photo-strip--auto');
+if (autoStrip) {
+  const originals = Array.from(autoStrip.children);
+  originals.forEach(img => {
+    const clone = img.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
+    clone.alt = '';
+    autoStrip.appendChild(clone);
+  });
+
+  // the clones start where the originals end; that offset is one full loop
+  let wrapAt = 0;
+  const measure = () => { wrapAt = autoStrip.children[originals.length].offsetLeft; };
+  measure();
+  window.addEventListener('resize', measure);
+
+  let pos = 0;
+  let paused = false;
+  let dragging = false;
+  let resumeTimer;
+  const pause = () => { paused = true; clearTimeout(resumeTimer); };
+  const resumeSoon = () => {
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => { pos = autoStrip.scrollLeft; paused = false; }, 2000);
+  };
+
+  autoStrip.addEventListener('mouseenter', pause);
+  autoStrip.addEventListener('mouseleave', resumeSoon);
+  autoStrip.addEventListener('touchstart', pause, { passive: true });
+  autoStrip.addEventListener('touchend', resumeSoon);
+  autoStrip.addEventListener('wheel', () => { pause(); resumeSoon(); }, { passive: true });
+
+  let dragStartX = 0;
+  let dragStartScroll = 0;
+  autoStrip.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse') return;
+    e.preventDefault();
+    dragging = true;
+    dragStartX = e.clientX;
+    dragStartScroll = autoStrip.scrollLeft;
+    pause();
+  });
+  window.addEventListener('pointermove', e => {
+    if (dragging) autoStrip.scrollLeft = dragStartScroll - (e.clientX - dragStartX);
+  });
+  window.addEventListener('pointerup', () => {
+    if (dragging) { dragging = false; resumeSoon(); }
+  });
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const drift = () => {
+      if (!paused && !dragging) {
+        pos += 0.5;
+        if (wrapAt && pos >= wrapAt) pos -= wrapAt;
+        autoStrip.scrollLeft = pos;
+      }
+      requestAnimationFrame(drift);
+    };
+    requestAnimationFrame(drift);
+  }
+}
+
 // Chat bubble
 const chatBubble = document.querySelector('.chat-bubble');
 if (chatBubble) {

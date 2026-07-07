@@ -1154,6 +1154,25 @@ section { scroll-margin-top: 96px; }
   scroll-snap-align: start;
 }
 
+/* dining food strip: drifts on its own (see script.js), so the scrollbar goes
+   and snap points come off — snapping would fight the pixel-by-pixel drift */
+.photo-strip--auto {
+  scroll-snap-type: none;
+  scrollbar-width: none;
+  cursor: grab;
+  padding-bottom: 0;
+}
+
+.photo-strip--auto::-webkit-scrollbar { display: none; }
+
+.photo-strip--auto:active { cursor: grabbing; }
+
+.photo-strip--auto img {
+  scroll-snap-align: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 /* lightbox */
 .lightbox {
   position: fixed;
