@@ -47,7 +47,10 @@
   <div id="dashboard" style="display:none">
     <div class="admin-toolbar">
       <h1>Bookings</h1>
-      <button class="btn btn--clay btn--small" id="addToggle"><i class="bi bi-plus-lg"></i> Add booking</button>
+      <div class="toolbar-actions">
+        <button class="btn btn--ghost btn--small" id="refreshBtn"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+        <button class="btn btn--clay btn--small" id="addToggle"><i class="bi bi-plus-lg"></i> Add booking</button>
+      </div>
     </div>
 
     <!-- manual booking / block a date -->
@@ -239,6 +242,16 @@
       if (link) window.open(link, '_blank');
     }
     await load();
+  });
+
+  // refresh
+  const refreshBtn = document.getElementById('refreshBtn');
+  refreshBtn.addEventListener('click', async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.classList.add('is-loading');
+    await load();
+    refreshBtn.classList.remove('is-loading');
+    refreshBtn.disabled = false;
   });
 
   // filters
