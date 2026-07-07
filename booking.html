@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request a Booking | Remzon's Farm &amp; Resort</title>
+  <meta name="description" content="Request a booking at Remzon's Farm & Resort: villa stays, private resort celebrations, day visits, and events. We confirm within a day.">
+  <link rel="icon" href="Logo/ResortLogo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Figtree:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header site-header--solid">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <img src="Logo/ResortLogo.png" alt="Remzon's Farm and Resort logo">
+    </a>
+    <nav class="site-nav">
+      <a href="rooms.html">Rooms</a>
+      <a href="index.html#dining">Dining</a>
+      <a href="index.html#day">Day Visits</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+    <a class="btn btn--clay btn--small header-cta" href="booking.html">Book now</a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false"><i class="bi bi-list"></i></button>
+  </div>
+</header>
+
+<!-- PAGE HEAD -->
+<section class="page-head">
+  <div class="container">
+    <p class="eyebrow">Book</p>
+    <h1>Request <em>your stay</em></h1>
+    <p class="lede">Tell us what you're planning and we'll confirm availability within a day. No payment needed now; you settle everything at the resort.</p>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section class="section" style="padding-block: clamp(40px, 6vw, 72px);">
+  <div class="container booking-layout">
+
+    <div>
+      <form class="booking-form" name="booking" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
+        <input type="hidden" name="form-name" value="booking">
+        <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+
+        <fieldset>
+          <legend>Which space are you booking?</legend>
+          <div class="choice-grid">
+            <label class="choice-card">
+              <input type="radio" name="space" value="Villa Resort" checked>
+              <span class="choice-name"><i class="bi bi-house-heart"></i> Villa Resort</span>
+              <span class="choice-sub">15–20 guests · from ₱7,000</span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="space" value="Private Resort">
+              <span class="choice-name"><i class="bi bi-stars"></i> Private Resort</span>
+              <span class="choice-sub">Up to 100 guests · ₱15,000</span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="space" value="Day Visit (Public Pool)">
+              <span class="choice-name"><i class="bi bi-sun"></i> Day Visit</span>
+              <span class="choice-sub">Public pool &amp; kubo cottages</span>
+            </label>
+            <label class="choice-card">
+              <input type="radio" name="space" value="Event / Celebration">
+              <span class="choice-name"><i class="bi bi-balloon"></i> Event</span>
+              <span class="choice-sub">Birthdays, reunions &amp; more</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Day tour or overnight?</legend>
+          <div class="pill-group">
+            <label class="pill-choice"><input type="radio" name="stay" value="Day tour" checked>Day tour</label>
+            <label class="pill-choice"><input type="radio" name="stay" value="Overnight">Overnight</label>
+          </div>
+        </fieldset>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required>
+            <p class="field-error">Please pick a date (today or later).</p>
+          </div>
+          <div class="field">
+            <label for="guests">Number of guests</label>
+            <input type="number" id="guests" name="guests" min="1" max="150" placeholder="e.g. 12" required>
+            <p class="field-error">How many are coming?</p>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="name">Your name</label>
+            <input type="text" id="name" name="name" autocomplete="name" placeholder="Juan Dela Cruz" required>
+            <p class="field-error">Please tell us your name.</p>
+          </div>
+          <div class="field">
+            <label for="phone">Mobile number</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="09XX XXX XXXX" required>
+            <p class="field-error">We need a number to confirm your booking.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="message">Anything else? <span>(optional)</span></label>
+          <textarea id="message" name="message" placeholder="Occasion, arrival time, catering questions..."></textarea>
+        </div>
+
+        <button class="btn btn--clay" type="submit"><i class="bi bi-send"></i> Send booking request</button>
+        <p class="form-note">We'll reply on WhatsApp or by call to confirm. No payment is taken online.</p>
+      </form>
+
+      <div class="booking-result" id="bookingResult">
+        <div class="result-icon"><i class="bi bi-check-lg"></i></div>
+        <h2 id="resultTitle">Request sent!</h2>
+        <p id="resultBody">Salamat! We've received your request and will confirm availability within a day. Want a faster reply? Send a copy straight to our WhatsApp.</p>
+        <div class="result-actions">
+          <a class="btn btn--clay" id="resultWhatsApp" href="#" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> Send via WhatsApp</a>
+          <a class="btn btn--ghost" href="index.html">Back to home</a>
+        </div>
+      </div>
+    </div>
+
+    <aside class="booking-aside">
+      <h3>What happens <em>next</em></h3>
+      <ol class="steps-list">
+        <li>Send your request. It goes straight to the family who runs the resort.</li>
+        <li>We check the date and confirm with you on WhatsApp or by call, usually within a day.</li>
+        <li>Once confirmed, just show up and enjoy. Payment is settled at the resort.</li>
+      </ol>
+      <div class="aside-contact">
+        <p>In a hurry? Message us directly on <a href="https://wa.me/639662276892?text=Hi!%20I%27d%20like%20to%20ask%20about%20booking%20at%20Remzon%27s%20Farm%20and%20Resort." target="_blank" rel="noopener">WhatsApp</a> or call <a href="tel:+639776829786">+63 977-682-9786</a>.</p>
+      </div>
+    </aside>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <p class="footer-signoff">See you <em>at the farm.</em></p>
+    <div class="footer-grid">
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="rooms.html">Rooms &amp; Rates</a></li>
+          <li><a href="index.html#dining">Dining</a></li>
+          <li><a href="index.html#day">Day Visits</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Find us</h4>
+        <p><i class="bi bi-geo-alt"></i> Purok 6, Old Paguiruan, Floridablanca, Pampanga</p>
+        <p><i class="bi bi-telephone"></i> +63 977-682-9786</p>
+      </div>
+      <div>
+        <h4>Follow along</h4>
+        <div class="footer-social">
+          <a href="https://web.facebook.com/RemZonsFarmandResort" target="_blank" rel="noopener" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+          <a href="https://wa.me/639662276892" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Remzon's Farm and Resort. All rights reserved.</p>
+      <img class="footer-badge" src="Logo/Resort Logo 1.png" alt="Remzon's Farm and Resort logo">
+    </div>
+  </div>
+</footer>
+
+<!-- Mobile book bar -->
+<div class="book-bar">
+  <a class="bar-book" href="https://wa.me/639662276892?text=Hi!%20I%27d%20like%20to%20ask%20about%20booking%20at%20Remzon%27s%20Farm%20and%20Resort." target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> WhatsApp us</a>
+  <a class="bar-call" href="tel:+639776829786"><i class="bi bi-telephone"></i> Call us</a>
+</div>
+
+<!-- Chat bubble -->
+<div class="chat-bubble">
+  <div class="chat-options">
+    <a class="chat-option chat-option--wa" href="https://wa.me/639662276892?text=Hi!%20I%27d%20like%20to%20ask%20about%20booking%20at%20Remzon%27s%20Farm%20and%20Resort." target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+    <a class="chat-option chat-option--ms" href="https://m.me/RemZonsFarmandResort" target="_blank" rel="noopener"><i class="bi bi-messenger"></i> Messenger</a>
+  </div>
+  <button class="chat-toggle" aria-label="Chat with us" aria-expanded="false"><i class="bi bi-chat-dots-fill"></i></button>
+</div>
+
+<script src="script.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('.booking-form');
+  const result = document.getElementById('bookingResult');
+  const dateInput = document.getElementById('date');
+
+  // no past dates (local calendar day, not UTC)
+  const now = new Date();
+  dateInput.min = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+  // preselect space from ?space= in the URL (villa | private | day | event)
+  const spaceParam = new URLSearchParams(location.search).get('space');
+  const spaceMap = { villa: 'Villa Resort', private: 'Private Resort', day: 'Day Visit (Public Pool)', event: 'Event / Celebration' };
+  if (spaceMap[spaceParam]) {
+    const radio = form.querySelector(`input[name="space"][value="${spaceMap[spaceParam]}"]`);
+    if (radio) radio.checked = true;
+  }
+
+  const validate = () => {
+    let ok = true;
+    form.querySelectorAll('.field input[required]').forEach(input => {
+      const field = input.closest('.field');
+      const bad = !input.value || (input.type === 'date' && input.value < dateInput.min);
+      field.classList.toggle('has-error', bad);
+      if (bad) ok = false;
+    });
+    return ok;
+  };
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validate()) {
+      form.querySelector('.field.has-error input').focus();
+      return;
+    }
+
+    const data = new FormData(form);
+    const prettyDate = new Date(data.get('date') + 'T00:00').toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const waText = encodeURIComponent(
+      `Hi! I'd like to request a booking.\n\n` +
+      `Space: ${data.get('space')}\n` +
+      `Type: ${data.get('stay')}\n` +
+      `Date: ${prettyDate}\n` +
+      `Guests: ${data.get('guests')}\n` +
+      `Name: ${data.get('name')}\n` +
+      `Mobile: ${data.get('phone')}` +
+      (data.get('message') ? `\nNotes: ${data.get('message')}` : '')
+    );
+    document.getElementById('resultWhatsApp').href = `https://wa.me/639662276892?text=${waText}`;
+
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
+
+    let sent = false;
+    try {
+      const res = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data).toString()
+      });
+      sent = res.ok;
+    } catch (_) { /* offline or local preview */ }
+
+    if (!sent) {
+      document.getElementById('resultTitle').textContent = 'One more tap';
+      document.getElementById('resultBody').textContent = "We couldn't reach our booking inbox from here, but your request is ready to go. Send it to our WhatsApp and we'll take it from there.";
+    }
+
+    form.classList.add('is-hidden');
+    result.classList.add('is-visible');
+    result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+});
+</script>
+</body>
+</html>
