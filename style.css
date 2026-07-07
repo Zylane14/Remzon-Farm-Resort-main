@@ -17,8 +17,8 @@
   --white: #FFFDF8;
   /* Apung Oting's signature — the restaurant's own logo maroon, used only on dining */
   --maroon: #7A2F3A;
-  /* accent gold for text on dark photos/espresso; deepened from var(--gold) July 2026 */
-  --gold: #D9A05B;
+  /* accent gold for text on dark photos/espresso */
+  --gold: #E9C08F;
 
   --font-display: "Fraunces", serif;
   --font-body: "Figtree", sans-serif;
