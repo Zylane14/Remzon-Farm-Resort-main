@@ -687,7 +687,12 @@ section { scroll-margin-top: 96px; }
   margin-top: 10px;
 }
 
+/* inline-block, not block: Safari carries a block's bottom margin across the
+   column break, dropping the second column's first card ~24px below the first */
 .menu-block {
+  display: inline-block;
+  width: 100%;
+  vertical-align: top;
   break-inside: avoid;
   background: var(--white);
   border: 1px solid var(--line);
