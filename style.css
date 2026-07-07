@@ -673,7 +673,7 @@ section { scroll-margin-top: 96px; }
   scroll-margin-top: 150px;
 }
 
-/* line needs a hint of espresso to stay visible on the sand band */
+/* a hint of espresso so the group rule reads stronger than the row hairlines */
 .menu-group + .menu-group {
   margin-top: clamp(40px, 5vw, 60px);
   border-top: 1px solid rgba(59, 46, 36, 0.14);
