@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookings Admin | Remzon's Farm &amp; Resort</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="Logo/ResortLogo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Figtree:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header site-header--solid">
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <img src="Logo/ResortLogo.png" alt="Remzon's Farm and Resort logo">
+    </a>
+    <button class="btn btn--ghost btn--small" id="logoutBtn" style="display:none"><i class="bi bi-box-arrow-right"></i> Log out</button>
+  </div>
+</header>
+
+<main class="admin-main">
+
+  <!-- LOGIN -->
+  <div class="admin-login" id="loginPanel" style="display:none">
+    <p class="eyebrow">Family only</p>
+    <h1>Bookings <em>admin</em></h1>
+    <p class="login-error" id="loginError">That didn't match. Check the email and password and try again.</p>
+    <form id="loginForm">
+      <div class="field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required>
+      </div>
+      <button class="btn btn--clay" type="submit" style="width:100%"><i class="bi bi-unlock"></i> Log in</button>
+    </form>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" style="display:none">
+    <div class="admin-toolbar">
+      <h1>Bookings</h1>
+      <button class="btn btn--clay btn--small" id="addToggle"><i class="bi bi-plus-lg"></i> Add booking</button>
+    </div>
+
+    <!-- manual booking / block a date -->
+    <div class="admin-add" id="addPanel">
+      <form id="addForm">
+        <div class="field-row">
+          <div class="field">
+            <label for="addSpace">Space</label>
+            <select id="addSpace">
+              <option>Villa Resort</option>
+              <option>Private Resort</option>
+              <option>Day Visit (Public Pool)</option>
+              <option>Event / Celebration</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="addStay">Type</label>
+            <select id="addStay">
+              <option>Day tour</option>
+              <option>Overnight</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="addDate">Date</label>
+            <input type="date" id="addDate" required>
+          </div>
+          <div class="field">
+            <label for="addGuests">Guests <span>(optional)</span></label>
+            <input type="number" id="addGuests" min="1" max="150">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="addName">Guest name <span>(or "Blocked" to close the date)</span></label>
+            <input type="text" id="addName" required>
+          </div>
+          <div class="field">
+            <label for="addPhone">Mobile <span>(optional)</span></label>
+            <input type="tel" id="addPhone" inputmode="tel">
+          </div>
+        </div>
+        <button class="btn btn--clay btn--tiny" type="submit"><i class="bi bi-check-lg"></i> Save as confirmed</button>
+      </form>
+    </div>
+
+    <div class="filter-pills" id="filterPills" style="margin-bottom:18px">
+      <button class="filter-pill is-active" data-filter="pending">Pending <span class="count">0</span></button>
+      <button class="filter-pill" data-filter="upcoming">Upcoming <span class="count">0</span></button>
+      <button class="filter-pill" data-filter="all">All</button>
+    </div>
+
+    <div class="admin-list" id="bookingList"></div>
+    <div class="admin-empty" id="emptyState" style="display:none">
+      <i class="bi bi-cup-hot" style="font-size:1.6rem"></i>
+      <p style="margin:10px 0 0">Nothing here right now. Enjoy the quiet!</p>
+    </div>
+  </div>
+
+</main>
+
+<script src="supabase-config.js"></script>
+<script>
+(async () => {
+  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+  const db = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+  const loginPanel = document.getElementById('loginPanel');
+  const dashboard = document.getElementById('dashboard');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const listEl = document.getElementById('bookingList');
+  const emptyEl = document.getElementById('emptyState');
+
+  let bookings = [];
+  let filter = 'pending';
+
+  const todayStr = () => {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
+  };
+
+  const show = loggedIn => {
+    loginPanel.style.display = loggedIn ? 'none' : 'block';
+    dashboard.style.display = loggedIn ? 'block' : 'none';
+    logoutBtn.style.display = loggedIn ? 'inline-flex' : 'none';
+    if (loggedIn) load();
+  };
+
+  // ---- auth ----
+  const { data: { session } } = await db.auth.getSession();
+  show(!!session);
+
+  document.getElementById('loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { error } = await db.auth.signInWithPassword({
+      email: document.getElementById('loginEmail').value.trim(),
+      password: document.getElementById('loginPassword').value
+    });
+    document.getElementById('loginError').classList.toggle('is-visible', !!error);
+    if (!error) show(true);
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    await db.auth.signOut();
+    show(false);
+  });
+
+  // ---- data ----
+  async function load() {
+    const { data, error } = await db.from('bookings')
+      .select('*')
+      .order('date', { ascending: true })
+      .order('created_at', { ascending: false });
+    if (error) { listEl.innerHTML = '<p>Could not load bookings. Pull to refresh or try again.</p>'; return; }
+    bookings = data;
+    render();
+  }
+
+  const fmtDate = d => new Date(d + 'T00:00').toLocaleDateString('en-PH', { weekday: 'short', month: 'long', day: 'numeric', year: 'numeric' });
+
+  // guest-typed values must never reach innerHTML unescaped
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const waLink = b => {
+    if (!b.phone) return null;
+    let digits = b.phone.replace(/\D/g, '');
+    if (digits.startsWith('0')) digits = '63' + digits.slice(1);
+    const msg = encodeURIComponent(`Hi ${b.name}! Your ${b.space} (${b.stay}) on ${fmtDate(b.date)} for ${b.guests || '?'} guests is CONFIRMED. See you at the farm!`);
+    return `https://wa.me/${digits}?text=${msg}`;
+  };
+
+  function render() {
+    const today = todayStr();
+    const visible = bookings.filter(b => {
+      if (filter === 'pending') return b.status === 'pending';
+      if (filter === 'upcoming') return b.status === 'confirmed' && b.date >= today;
+      return true;
+    });
+
+    document.querySelector('[data-filter="pending"] .count').textContent =
+      bookings.filter(b => b.status === 'pending').length;
+    document.querySelector('[data-filter="upcoming"] .count').textContent =
+      bookings.filter(b => b.status === 'confirmed' && b.date >= today).length;
+
+    emptyEl.style.display = visible.length ? 'none' : 'block';
+    listEl.innerHTML = visible.map(b => `
+      <div class="booking-card">
+        <div class="card-top">
+          <span class="card-space">${esc(b.space)}</span>
+          <span class="status-badge" data-status="${esc(b.status)}">${esc(b.status)}</span>
+        </div>
+        <div class="card-facts">
+          <span><i class="bi bi-calendar3"></i>${fmtDate(b.date)} · ${esc(b.stay)}</span>
+          ${b.guests ? `<span><i class="bi bi-people"></i>${esc(b.guests)} guests</span>` : ''}
+          <span><i class="bi bi-person"></i>${esc(b.name) || '—'}</span>
+          ${b.phone ? `<span><i class="bi bi-telephone"></i><a href="tel:${esc(b.phone)}">${esc(b.phone)}</a></span>` : ''}
+        </div>
+        ${b.message ? `<p class="card-note">${esc(b.message)}</p>` : ''}
+        <p class="card-meta">${b.source === 'manual' ? 'Added by the resort' : 'From the website'} · ${new Date(b.created_at).toLocaleDateString('en-PH', { month: 'short', day: 'numeric' })}</p>
+        <div class="card-actions">
+          ${b.status === 'pending' ? `
+            <button class="btn btn--confirm btn--tiny" data-act="confirmed" data-id="${b.id}"><i class="bi bi-check-lg"></i> Confirm</button>
+            <button class="btn btn--ghost btn--tiny" data-act="declined" data-id="${b.id}"><i class="bi bi-x-lg"></i> Decline</button>
+          ` : ''}
+          ${b.status === 'confirmed' ? `
+            ${waLink(b) ? `<a class="btn btn--clay btn--tiny" href="${waLink(b)}" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> Reply on WhatsApp</a>` : ''}
+            <button class="btn btn--ghost btn--tiny" data-act="cancelled" data-id="${b.id}"><i class="bi bi-x-lg"></i> Cancel booking</button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // status changes (event delegation, XSS-safe: only ids and fixed statuses)
+  listEl.addEventListener('click', async e => {
+    const btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    const b = bookings.find(x => x.id === btn.dataset.id);
+    btn.disabled = true;
+    const { error } = await db.from('bookings')
+      .update({ status: btn.dataset.act })
+      .eq('id', btn.dataset.id);
+    if (error) { btn.disabled = false; return; }
+    // confirming? jump straight into WhatsApp with the guest
+    if (btn.dataset.act === 'confirmed' && b && b.phone) {
+      const link = waLink({ ...b, status: 'confirmed' });
+      if (link) window.open(link, '_blank');
+    }
+    await load();
+  });
+
+  // filters
+  document.getElementById('filterPills').addEventListener('click', e => {
+    const pill = e.target.closest('.filter-pill');
+    if (!pill) return;
+    filter = pill.dataset.filter;
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('is-active', p === pill));
+    render();
+  });
+
+  // manual add
+  const addPanel = document.getElementById('addPanel');
+  document.getElementById('addToggle').addEventListener('click', () => addPanel.classList.toggle('is-open'));
+
+  document.getElementById('addForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const { error } = await db.from('bookings').insert({
+      space: document.getElementById('addSpace').value,
+      stay: document.getElementById('addStay').value,
+      date: document.getElementById('addDate').value,
+      guests: parseInt(document.getElementById('addGuests').value, 10) || null,
+      name: document.getElementById('addName').value,
+      phone: document.getElementById('addPhone').value || null,
+      status: 'confirmed',
+      source: 'manual'
+    });
+    if (!error) {
+      e.target.reset();
+      addPanel.classList.remove('is-open');
+      await load();
+    }
+  });
+})();
+</script>
+</body>
+</html>

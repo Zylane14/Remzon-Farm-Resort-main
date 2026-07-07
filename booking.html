@@ -87,6 +87,7 @@
             <label for="date">Date</label>
             <input type="date" id="date" name="date" required>
             <p class="field-error">Please pick a date (today or later).</p>
+            <p class="field-hint" id="dateHint"><i class="bi bi-info-circle"></i> That date already has a confirmed booking for this space. You can still send a request, or pick another date.</p>
           </div>
           <div class="field">
             <label for="guests">Number of guests</label>
@@ -131,7 +132,7 @@
     <aside class="booking-aside">
       <h3>What happens <em>next</em></h3>
       <ol class="steps-list">
-        <li>Send your request. It goes straight to the family who runs the resort.</li>
+        <li>Send your request. It goes straight to us who runs the resort.</li>
         <li>We check the date and confirm with you on WhatsApp or by call, usually within a day.</li>
         <li>Once confirmed, just show up and enjoy. Payment is settled at the resort.</li>
       </ol>
@@ -194,11 +195,22 @@
 </div>
 
 <script src="script.js" defer></script>
+<script src="supabase-config.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.querySelector('.booking-form');
   const result = document.getElementById('bookingResult');
   const dateInput = document.getElementById('date');
+
+  // Supabase loads in the background; the form never waits on it to render.
+  const dbReady = (async () => {
+    try {
+      if (!window.SUPABASE_URL || window.SUPABASE_URL.includes('PASTE_')) return null;
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      return createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    } catch (_) { return null; }
+  })();
+  const dbWithTimeout = ms => Promise.race([dbReady, new Promise(r => setTimeout(() => r(null), ms))]);
 
   // no past dates (local calendar day, not UTC)
   const now = new Date();
@@ -211,6 +223,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const radio = form.querySelector(`input[name="space"][value="${spaceMap[spaceParam]}"]`);
     if (radio) radio.checked = true;
   }
+
+  // soft availability warning: exclusive spaces only (the public pool never "fills up")
+  const dateHint = document.getElementById('dateHint');
+  const checkAvailability = async () => {
+    dateHint.classList.remove('is-visible');
+    const space = form.querySelector('input[name="space"]:checked').value;
+    if (!dateInput.value || space === 'Day Visit (Public Pool)') return;
+    const db = await dbWithTimeout(4000);
+    if (!db) return;
+    const { data, error } = await db.rpc('taken_dates', {
+      space_filter: space, from_date: dateInput.value, to_date: dateInput.value
+    });
+    if (!error && data && data.length > 0) dateHint.classList.add('is-visible');
+  };
+  dateInput.addEventListener('change', checkAvailability);
+  form.querySelectorAll('input[name="space"]').forEach(r => r.addEventListener('change', checkAvailability));
 
   const validate = () => {
     let ok = true;
@@ -248,6 +276,22 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.disabled = true;
     btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Sending...';
 
+    // save to the booking system and to Netlify Forms; either one counts as sent
+    let savedToDb = false;
+    const db = await dbWithTimeout(6000);
+    if (db) {
+      const { error } = await db.from('bookings').insert({
+        space: data.get('space'),
+        stay: data.get('stay'),
+        date: data.get('date'),
+        guests: parseInt(data.get('guests'), 10) || null,
+        name: data.get('name'),
+        phone: data.get('phone'),
+        message: data.get('message') || null
+      });
+      savedToDb = !error;
+    }
+
     let sent = false;
     try {
       const res = await fetch('/', {
@@ -257,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       sent = res.ok;
     } catch (_) { /* offline or local preview */ }
+    sent = sent || savedToDb;
 
     if (!sent) {
       document.getElementById('resultTitle').textContent = 'One more tap';
