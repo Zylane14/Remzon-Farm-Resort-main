@@ -399,3 +399,7 @@ FodyWeavers.xsd
 
 # macOS
 .DS_Store
+
+# Personal presentation notes (not part of the site)
+DESIGN.md
+docs/
